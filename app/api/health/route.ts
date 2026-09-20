@@ -1,1 +1,1 @@
-export async function GET(){return Response.json({ok:true,service:"contentra",mode:"demo",timestamp:new Date().toISOString()})}
+import{db}from"@/lib/server/db";export async function GET(){try{await db.$queryRawUnsafe("SELECT 1");return Response.json({ok:true,db:true,service:"contentra"})}catch{return Response.json({ok:false,db:false,service:"contentra"},{status:503})}}
