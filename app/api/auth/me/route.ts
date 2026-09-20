@@ -1,0 +1,1 @@
+import{getSession}from"@/lib/server/auth";import{ok,fail}from"@/lib/server/api";export async function GET(){const u=await getSession();return u?ok(u):fail("Not authenticated",401,"UNAUTHORIZED")}
