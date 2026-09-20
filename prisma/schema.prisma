@@ -1,0 +1,23 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+model User { id String @id @default(cuid()) email String @unique name String? workspaces WorkspaceMember[] createdAt DateTime @default(now()) }
+model Workspace { id String @id @default(cuid()) name String members WorkspaceMember[] brandBrain BrandBrain? content Content[] trends Trend[] creators Creator[] campaigns Campaign[] automations Automation[] notifications Notification[] subscription Subscription? createdAt DateTime @default(now()) }
+model WorkspaceMember { id String @id @default(cuid()) role WorkspaceRole @default(VIEWER) userId String workspaceId String user User @relation(fields:[userId],references:[id]) workspace Workspace @relation(fields:[workspaceId],references:[id]) @@unique([userId,workspaceId]) }
+enum WorkspaceRole { OWNER ADMIN EDITOR VIEWER }
+model BrandBrain { id String @id @default(cuid()) workspaceId String @unique brand String product String audience String positioning String voice String contentPillars Json goals Json ctas Json competitors Json preferences Json website String? workspace Workspace @relation(fields:[workspaceId],references:[id]) }
+model Content { id String @id @default(cuid()) workspaceId String title String hook String script String? caption String? platform String format String status String views Int @default(0) engagement Float @default(0) workspace Workspace @relation(fields:[workspaceId],references:[id]) drafts ContentDraft[] metrics ContentMetric[] attribution AttributionEvent[] createdAt DateTime @default(now()) }
+model ContentDraft { id String @id @default(cuid()) contentId String version Int content Json contentRef Content @relation(fields:[contentId],references:[id]) }
+model ContentVersion { id String @id @default(cuid()) contentId String version Int content Json }
+model Trend { id String @id @default(cuid()) workspaceId String title String platform String views String growth String format String niche String why String workspace Workspace @relation(fields:[workspaceId],references:[id]) }
+model Creator { id String @id @default(cuid()) workspaceId String name String style String niche String language String? workspace Workspace @relation(fields:[workspaceId],references:[id]) }
+model UGCAsset { id String @id @default(cuid()) workspaceId String name String url String? creatorId String? }
+model Campaign { id String @id @default(cuid()) workspaceId String name String goal String product String? audience String? platforms Json startDate DateTime? endDate DateTime? workspace Workspace @relation(fields:[workspaceId],references:[id]) }
+model CalendarPost { id String @id @default(cuid()) contentId String scheduledAt DateTime status String platform String campaignId String? }
+model SocialConnection { id String @id @default(cuid()) workspaceId String platform String accountName String? status String lastSync DateTime? }
+model AnalyticsEvent { id String @id @default(cuid()) workspaceId String contentId String? type String value Float createdAt DateTime @default(now()) }
+model ContentMetric { id String @id @default(cuid()) contentId String views Int reach Int engagement Float likes Int comments Int shares Int saves Int followers Int clicks Int conversions Int revenue Float recordedAt DateTime @default(now()) content Content @relation(fields:[contentId],references:[id]) }
+model AttributionEvent { id String @id @default(cuid()) contentId String type String value Float metadata Json? createdAt DateTime @default(now()) content Content @relation(fields:[contentId],references:[id]) }
+model Automation { id String @id @default(cuid()) workspaceId String name String enabled Boolean @default(false) workspace Workspace @relation(fields:[workspaceId],references:[id]) steps AutomationStep[] }
+model AutomationStep { id String @id @default(cuid()) automationId String type String config Json order Int automation Automation @relation(fields:[automationId],references:[id]) }
+model Notification { id String @id @default(cuid()) workspaceId String title String read Boolean @default(false) createdAt DateTime @default(now()) workspace Workspace @relation(fields:[workspaceId],references:[id]) }
+model Subscription { id String @id @default(cuid()) workspaceId String @unique plan String status String provider String? workspace Workspace @relation(fields:[workspaceId],references:[id]) }
