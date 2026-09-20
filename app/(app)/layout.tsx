@@ -1,0 +1,1 @@
+import{AppShell}from"@/components/app-shell";import{Assistant}from"@/components/assistant";export default function Layout({children}:{children:React.ReactNode}){return <AppShell>{children}<Assistant/></AppShell>}
